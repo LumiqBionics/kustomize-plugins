@@ -23,9 +23,7 @@ metadata:
   name: something
 name: forbiddenValues
 namespace: production
-keys:
-- ROCKET
-- VEGETABLE
+kvPath: v1/kv/infrastructure/shared-services/concourse/stored-creds/core/slack-webhook-url
 `)
 	th.AssertActualEqualsExpected(m, `
 apiVersion: v1
