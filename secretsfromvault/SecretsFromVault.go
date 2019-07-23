@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 
@@ -48,7 +49,7 @@ type plugin struct {
 	rf  *resmap.Factory
 	ldr ifc.Loader
 	// name of generated secret
-	Name string `json:"name,omitempty" yaml:"name,omitempty"`
+	Name string `json:"name" yaml:"name"`
 	// namespace of generated secret
 	Namespace string `json:"namespace,omitempty" yaml:"namespace,omitempty"`
 	// custom approle login path
@@ -89,6 +90,9 @@ func login(path string) (*vaultapi.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	if secret == nil {
+		return nil, errors.New("token is empty")
+	}
 	client.SetToken(secret.Auth.ClientToken)
 
 	return client, nil
@@ -100,7 +104,7 @@ func readSecret(client *vaultapi.Client, path string) (map[string]interface{}, e
 	if err != nil {
 		return nil, err
 	}
-	if data == nil {
+	if data == nil || data.Data == nil {
 		return nil, fmt.Errorf("no secret available at '%s'", path)
 	}
 
@@ -108,6 +112,10 @@ func readSecret(client *vaultapi.Client, path string) (map[string]interface{}, e
 }
 
 func (p *plugin) Generate() (resmap.ResMap, error) {
+	if p.Name == "" {
+		return nil, errors.New("Name cannot be empty")
+	}
+
 	loginPath := approleLoginPath
 	if p.ApproleLoginPath != "" {
 		loginPath = p.ApproleLoginPath
