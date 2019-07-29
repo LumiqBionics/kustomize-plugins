@@ -23,7 +23,7 @@ TLDR:
 # set variables
 export GOPATH=$(mktemp -d)
 go install sigs.k8s.io/kustomize/v3/cmd/kustomize
-export XDG_CONFIG_HOME=$GOPATH/xgd
+export XDG_CONFIG_HOME=$GOPATH/xdg
 export API_VERSION=lumiq.com/v1
 
 # build plugins
