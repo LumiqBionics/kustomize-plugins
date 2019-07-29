@@ -27,6 +27,7 @@ import (
 // name: mySecret
 // namespace: production
 // kvPath: v1/kv/some/data
+// GeneratorOptions: {}
 //
 // if vault KV secret at `v1/kv/some/data` contains:
 // | key  | value |
@@ -42,7 +43,7 @@ import (
 //   key2: <base64 encoded of data2>
 // kind: Secret
 // metadata:
-//   name: mySecret
+//   name: mySecret-<suffix>
 //   namespace: production
 // type: Opaque
 type plugin struct {
@@ -55,7 +56,8 @@ type plugin struct {
 	// custom approle login path
 	ApproleLoginPath string `json:"approleLoginPath,omitempty" yaml:"approleLoginPath,omitempty"`
 	// path of KV secret
-	KvPath string `json:"kvPath,omitempty" yaml:"kvPath,omitempty"`
+	KvPath           string                 `json:"kvPath,omitempty" yaml:"kvPath,omitempty"`
+	GeneratorOptions types.GeneratorOptions `json:"generatorOptions,omitempty" yaml:"generatorOptions,omitempty"`
 }
 
 //noinspection GoUnusedGlobalVariable
@@ -142,5 +144,5 @@ func (p *plugin) Generate() (resmap.ResMap, error) {
 		secretData := fmt.Sprintf("%s=%s", k, v)
 		args.LiteralSources = append(args.LiteralSources, secretData)
 	}
-	return p.rf.FromSecretArgs(p.ldr, nil, args)
+	return p.rf.FromSecretArgs(p.ldr, &p.GeneratorOptions, args)
 }
