@@ -1,0 +1,40 @@
+version: "3"
+services:
+  vault:
+    image: vault
+    ports:
+    - "8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: myroot
+      VAULT_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+    cap_add:
+    - IPC_LOCK
+    entrypoint: vault server -dev
+    depends_on:
+    - vaultconfig
+  vaultconfig:
+    image: vault
+    cap_add:
+    - IPC_LOCK
+    volumes:
+    - .:/code
+    - credentials:/credentials
+    working_dir: /code
+    environment:
+      VAULT_ADDR: http://vault:8200
+    command: ./vault-config.sh
+  test:
+    build:
+      context: ..
+    volumes:
+    - .:/code
+    - credentials:/credentials:ro
+    working_dir: /code
+    environment:
+      VAULT_ADDR: http://vault:8200
+    entrypoint: ./check-kustomize.sh
+    depends_on:
+    - vault
+
+volumes:
+  credentials:

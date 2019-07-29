@@ -12,6 +12,29 @@ $ go test ./...
 ok      github.com/LumiqBionics/kustomize-plugins/secretsfromvault      1.192s
 ```
 
+### Acceptance test
+
+```
+$ cd tests/
+$ docker-compose run test
+Creating network "tests_default" with the default driver
+Creating volume "tests_credentials" with default driver
+Creating tests_vaultconfig_1 ... done
+Creating tests_vault_1       ... done
+cat: /credentials/vault-role-id: No such file or directory
+vault is not ready, sleeping for 5 seconds...
+cat: /credentials/vault-role-id: No such file or directory
+vault is not ready, sleeping for 5 seconds...
+f2e6cbb2-312d-17fa-c015-2256fe256112
+13b2617e-8a06-9153-2edc-e08fc85a1cf6
+verifying kustomize files
+building kustomize file: fixtures/base
+building kustomize file: fixtures/no-suffix
+done
+```
+
+
+
 ### Building and using the plugin locally
 
 See [Go Plugin Guided Example for Linux](
