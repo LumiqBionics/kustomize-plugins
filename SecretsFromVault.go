@@ -15,8 +15,9 @@ import (
 // generates kubernetes secret from vault KV secret.
 // all key-value pairs in vault secret will be used as `data` part in Opaque kubernetes secret.
 //
-// vault login is done via AppRole with credentials passed via env variables VAULT_ROLE_ID and
-// VAULT_SECRET_ID.
+// vault login can be done via
+// - AppRole with credentials passed via env variables VAULT_ROLE_ID and VAULT_SECRET_ID.
+// - Token with credentials passed via env variables VAULT_TOKEN.
 //
 // given configuration:
 // ---
@@ -74,28 +75,34 @@ const (
 	approleLoginPath = "auth/approle/login"
 )
 
-// login to vault with AppRole
+// login to vault with token or AppRole
 // https://www.vaultproject.io/api/auth/approle/index.html#login-with-approle
+//
+// token login is given higher priority.
 func login(path string) (*vaultapi.Client, error) {
 	client, err := vaultapi.NewClient(nil)
 	if err != nil {
 		return nil, err
 	}
 
-	options := map[string]interface{}{
-		"role_id":   os.Getenv("VAULT_ROLE_ID"),
-		"secret_id": os.Getenv("VAULT_SECRET_ID"),
-	}
+	token := os.Getenv("VAULT_TOKEN")
+	if token == "" {
+		options := map[string]interface{}{
+			"role_id":   os.Getenv("VAULT_ROLE_ID"),
+			"secret_id": os.Getenv("VAULT_SECRET_ID"),
+		}
 
-	// retrieve token for the given approle
-	secret, err := client.Logical().Write(path, options)
-	if err != nil {
-		return nil, err
+		// retrieve token for the given approle
+		secret, err := client.Logical().Write(path, options)
+		if err != nil {
+			return nil, err
+		}
+		if secret == nil {
+			return nil, errors.New("token is empty")
+		}
+		token = secret.Auth.ClientToken
 	}
-	if secret == nil {
-		return nil, errors.New("token is empty")
-	}
-	client.SetToken(secret.Auth.ClientToken)
+	client.SetToken(token)
 
 	return client, nil
 }
