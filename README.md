@@ -33,8 +33,6 @@ building kustomize file: fixtures/no-suffix
 done
 ```
 
-
-
 ### Building and using the plugin locally
 
 See [Go Plugin Guided Example for Linux](
@@ -77,6 +75,21 @@ export VAULT_ADDR="<vault address>"
 export VAULT_ROLE_ID="<approle role id>"
 export VAULT_SECRET_ID="<approle secret id>"
 $GOPATH/bin/kustomize build --enable_alpha_plugins
+```
+
+### Docker image
+
+This is available as docker image in [lumiqbionics/kustomize](
+https://hub.docker.com/r/lumiqbionics/kustomize). It can be run with:
+
+```sh
+export VAULT_ADDR=<vault address>
+# login with your method of choice
+vault login <options>
+docker run -e VAULT_ADDR=$VAULT_ADDR \
+    -e VAULT_TOKEN=$(cat ~/.vault-token) \
+    --rm -v ${PWD}:/code -ti lumiqbionics/kustomize \
+    build --enable_alpha_plugins /code/<path to kustomization file>
 ```
 
 ## ArgoCD
