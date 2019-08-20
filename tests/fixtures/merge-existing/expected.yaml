@@ -1,0 +1,12 @@
+apiVersion: v1
+data:
+  dummy: dmFsdWU=
+  value-one: YmxhaAo=
+kind: Secret
+metadata:
+  annotations: {}
+  labels:
+    one: two
+    three: four
+  name: existing-secret
+type: Opaque

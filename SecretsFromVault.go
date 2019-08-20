@@ -58,6 +58,7 @@ type plugin struct {
 	ApproleLoginPath string `json:"approleLoginPath,omitempty" yaml:"approleLoginPath,omitempty"`
 	// path of KV secret
 	KvPath           string                 `json:"kvPath,omitempty" yaml:"kvPath,omitempty"`
+	Behavior         string                 `json:"behavior,omitempty" yaml:"behavior,omitempty"`
 	GeneratorOptions types.GeneratorOptions `json:"generatorOptions,omitempty" yaml:"generatorOptions,omitempty"`
 }
 
@@ -145,6 +146,9 @@ func (p *plugin) Generate() (resmap.ResMap, error) {
 	args := types.SecretArgs{}
 	args.Name = p.Name
 	args.Namespace = p.Namespace
+	if p.Behavior != "" {
+		args.GeneratorArgs.Behavior = p.Behavior
+	}
 
 	// map each key and value in a vault secret to kubernetes secret
 	for k, v := range secret {
