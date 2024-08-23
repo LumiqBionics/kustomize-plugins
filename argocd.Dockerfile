@@ -1,6 +1,6 @@
 ARG ARGO_VERSION=v1.1.0
 
-FROM golang:1.12 as builder
+FROM golang:1.16 as builder
 
 ARG KUSTOMIZE_VERSION=v3.1.0
 COPY . /code
