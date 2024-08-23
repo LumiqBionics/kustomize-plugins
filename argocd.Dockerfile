@@ -14,6 +14,8 @@ RUN mkdir -p /gopath sigs.k8s.io && \
     git clone https://github.com/kubernetes-sigs/kustomize.git sigs.k8s.io/kustomize && \
     (cd sigs.k8s.io/kustomize; git checkout ${KUSTOMIZE_VERSION}) && \
     cp SecretsFromVault.go sigs.k8s.io/kustomize/plugin/ && \
+    cp go.mod sigs.k8s.io/kustomize/ && \
+    cp go.sum sigs.k8s.io/kustomize/ && \
     cd sigs.k8s.io/kustomize && \
     git apply ../../kustomize.patch && \
     git apply ../../kustomize-enable.patch && \
